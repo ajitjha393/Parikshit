@@ -1,6 +1,8 @@
 ﻿import HasteMap from 'jest-haste-map'
+import { Worker } from 'jest-worker'
 import { cpus } from 'os'
-import fs from 'fs'
+import { join } from 'path'
+
 
 const root = __dirname
 
@@ -19,9 +21,14 @@ const hasteMap = HasteMap.create({
     const { hasteFS } = await hasteMap.build()
     const testFiles = hasteFS.matchFilesWithGlob(["**/*.test.js"], root)
 
+    const worker = new Worker(join(root,'internals','worker.js'), {
+        enableWorkerThreads: true
+    })
+
     for await(const testFile of testFiles) {
-        const code = await fs.promises.readFile(testFile, 'utf-8')
-        console.log(code)
+        console.log(await (worker as any).runTest(testFile))
     }
+
+    worker.end()
 })()
 
