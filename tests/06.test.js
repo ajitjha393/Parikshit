@@ -1,1 +1,1 @@
-expect(6).toBe(6);
+expect(6).toBe(6)
