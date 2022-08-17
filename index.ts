@@ -1,5 +1,6 @@
 ﻿import HasteMap from 'jest-haste-map'
-import {cpus} from 'os'
+import { cpus } from 'os'
+import fs from 'fs'
 
 const root = __dirname
 
@@ -16,6 +17,11 @@ const hasteMap = HasteMap.create({
 
 (async() => {
     const { hasteFS } = await hasteMap.build()
-    console.log(hasteFS.getAllFiles())
+    const testFiles = hasteFS.matchFilesWithGlob(["**/*.test.js"], root)
+
+    for await(const testFile of testFiles) {
+        const code = await fs.promises.readFile(testFile, 'utf-8')
+        console.log(code)
+    }
 })()
 
