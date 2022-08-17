@@ -1,0 +1,10 @@
+{
+  "name": "parikshit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "glob": "^8.0.3",
+    "jest-haste-map": "^28.1.3"
+  }
+}
