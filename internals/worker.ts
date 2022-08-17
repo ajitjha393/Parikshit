@@ -1,6 +1,25 @@
 ﻿import fs from 'fs'
 
-export const runTest = async (testFile: string) => {
+type Nullable<T> = T | null
+
+type TestResult = {
+    success: boolean,
+    errorMessage: Nullable<string> 
+}
+
+export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
-    return testFile + '\n ' + code
+    const testResult = {
+        success: true,
+        errorMessage: null
+    }
+
+    try{
+        eval(code);
+        testResult.success = true
+    }catch(error){
+        testResult.errorMessage = null
+    }
+
+    return testResult
 }
