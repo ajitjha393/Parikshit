@@ -1,4 +1,5 @@
-﻿import HasteMap from 'jest-haste-map'
+﻿import chalk from 'chalk'
+import HasteMap from 'jest-haste-map'
 import { Worker } from 'jest-worker'
 import { cpus } from 'os'
 import { join } from 'path'
@@ -26,8 +27,14 @@ const hasteMap = HasteMap.create({
     })
 
     for await(const testFile of testFiles) {
-        console.log(await (worker as any).runTest(testFile))
-    }
+        const { success, errorMessage } = await (worker as any).runTest(testFile) 
+        const status = success ? chalk.green.inverse(' PASS ') : chalk.red.inverse(' FAIL ')
+        console.log(status + ' ' + chalk.dim(testFile))
+
+        if(!success) {
+            console.log(errorMessage)
+        }
+    }   
 
     worker.end()
 })()
