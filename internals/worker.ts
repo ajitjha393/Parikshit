@@ -10,7 +10,7 @@ type TestResult = {
 export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
     const testResult = {
-        success: true,
+        success: false,
         errorMessage: null
     }
 
@@ -18,7 +18,7 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
         eval(code);
         testResult.success = true
     }catch(error){
-        testResult.errorMessage = null
+        testResult.errorMessage = (error as any).message
     }
 
     return testResult
