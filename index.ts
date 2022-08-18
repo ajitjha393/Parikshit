@@ -26,16 +26,24 @@ const hasteMap = HasteMap.create({
         enableWorkerThreads: true
     })
 
+    let hasTestsFailed = false
+    
     for await(const testFile of testFiles) {
         const { success, errorMessage } = await (worker as any).runTest(testFile) 
         const status = success ? chalk.green.inverse(' PASS ') : chalk.red.inverse(' FAIL ')
         console.log(status + ' ' + chalk.dim(relative(root, testFile)))
 
         if(!success) {
+            hasTestsFailed = true
             console.log('  ' + errorMessage)
         }
     }   
 
     worker.end()
+
+    if(hasTestsFailed){
+        console.log(chalk.red.bold('The test run failed, please fix your failing tests'))
+        process.exitCode = 1
+    }
 })()
 
