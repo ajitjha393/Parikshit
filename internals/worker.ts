@@ -1,7 +1,7 @@
 ﻿import fs from 'fs'
 import _expect from 'expect'
+const mock = require('jest-mock')
 
-const expect = _expect
 
 type Nullable<T> = T | null
 
@@ -10,8 +10,12 @@ type TestResult = {
     errorMessage: Nullable<string> 
 }
 
+const expect = _expect
 
-const materializeImport = () => void expect 
+const materializeImport = () => {
+    void expect
+    void mock
+} 
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
