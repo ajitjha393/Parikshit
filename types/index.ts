@@ -1,7 +1,12 @@
-﻿export type Nullable<T> = T | null
+﻿import { run } from 'jest-circus'
+
+type GetPromiseResolvedType<T> = T extends Promise<infer K> ? K : never
+
+type Nullable<T> = T | null
 
 export type TestResult = {
     success: boolean,
+    testResults: GetPromiseResolvedType<ReturnType<typeof run>>["testResults"],
     errorMessage: Nullable<string> 
 }
 
