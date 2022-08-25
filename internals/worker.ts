@@ -1,28 +1,12 @@
 ﻿import fs from 'fs'
-import _expect from 'expect'
+import Expect from 'expect'
+import * as TestRunner from 'jest-circus'
+import { TestResult } from '../types'
+
 const mock = require('jest-mock')
+const expect = Expect
+const { describe, it, run} = TestRunner
 
-
-type Nullable<T> = T | null
-
-type TestResult = {
-    success: boolean,
-    errorMessage: Nullable<string> 
-}
-
-type Runner = {
-    name: string,
-    fn: () => void
-}
-
-type RunnerTuple = [Runner['name'], Runner['fn']]
-
-const expect = _expect
-
-const materializeImport = () => {
-    void expect
-    void mock
-} 
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
@@ -34,33 +18,21 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     let testName = ''
     
     try{
-        const describeFns: RunnerTuple[] = []
-        let currentDescribeFn: RunnerTuple[] = []
-
-        const describe = (name: Runner['name'], fn: Runner['fn']) => {
-            describeFns.push([name, fn])
-        }
-        const it = (name: Runner['name'], fn: Runner['fn']) => {
-            currentDescribeFn.push([name, fn])
-        }
-
         eval(code)
-
-        for(const [name, fn] of describeFns) {
-            currentDescribeFn = []
-            testName = name
-            fn()
-
-            for(const [itName, itFn] of currentDescribeFn){
-                testName += ' ' + itName  
-                itFn()
-            }
-        }
-
-        testResult.success = true
+        const { testResults } = await run()
+        testResult.success = testResults.every(result => !result.errors.length)
     }catch(error){
         testResult.errorMessage = (testName + ':' +  (error as any).message)
     }
 
     return testResult
 }
+
+// Just to materialize Imports being used
+const materializeImport = () => {
+    void expect
+    void mock
+    void describe
+    void it
+    void run
+} 
