@@ -5,7 +5,7 @@ import { TestResult } from '../types'
 
 const mock = require('jest-mock')
 const expect = Expect
-const { describe, it, run} = TestRunner
+const { describe, it, run, resetState} = TestRunner
 
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
@@ -19,6 +19,7 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     let testName = ''
     
     try{
+        resetState()
         eval(code)
         const { testResults } = await run()
         testResult.testResults = testResults
