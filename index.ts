@@ -3,6 +3,7 @@ import HasteMap from 'jest-haste-map'
 import { Worker } from 'jest-worker'
 import { cpus } from 'os'
 import { join, relative } from 'path'
+import { TestResult } from './types'
 
 
 const root = __dirname
@@ -30,13 +31,21 @@ const hasteMap = HasteMap.create({
     let hasTestsFailed = false
     
     for await(const testFile of testFiles) {
-        const { success, errorMessage } = await (worker as any).runTest(testFile) 
+        const { success, errorMessage, testResults } = await (worker as any).runTest(testFile) 
         const status = success ? chalk.green.inverse(' PASS ') : chalk.red.inverse(' FAIL ')
         console.log(status + ' ' + chalk.dim(relative(root, testFile)))
 
         if(!success) {
             hasTestsFailed = true
-            console.log('  ' + errorMessage)
+            if(testResults) {
+                (testResults as TestResult["testResults"])
+                .filter(result => result.errors.length)
+                .forEach(result => console.log(
+                    result.testPath.slice(1).join(' >> ') + '\n' + result.errors[0]
+                ))
+            }else if(errorMessage) {
+                console.log(' ' + errorMessage)
+            }
         }
     }   
 
