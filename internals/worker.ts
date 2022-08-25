@@ -12,6 +12,7 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
     const testResult: TestResult = {
         success: false,
+        testResults: [],
         errorMessage: null
     }
 
@@ -20,6 +21,7 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     try{
         eval(code)
         const { testResults } = await run()
+        testResult.testResults = testResults
         testResult.success = testResults.every(result => !result.errors.length)
     }catch(error){
         testResult.errorMessage = (testName + ':' +  (error as any).message)
