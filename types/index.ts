@@ -6,7 +6,7 @@ type Nullable<T> = T | null
 
 export type TestResult = {
     success: boolean,
-    testResults: GetPromiseResolvedType<ReturnType<typeof run>>["testResults"],
+    testResults: Awaited<ReturnType<typeof run>>["testResults"],
     errorMessage: Nullable<string> 
 }
 
