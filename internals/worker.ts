@@ -1,12 +1,9 @@
 ﻿import fs from 'fs'
-import Expect from 'expect'
-import * as TestRunner from 'jest-circus'
+import mock from 'jest-mock'
+import expect from 'expect'
+import { describe, it, run, resetState}  from 'jest-circus'
+import vm from 'vm'
 import { TestResult } from '../types'
-
-const mock = require('jest-mock')
-const expect = Expect
-const { describe, it, run, resetState} = TestRunner
-
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
@@ -19,8 +16,10 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     let testName = ''
     
     try{
+        const context = { describe, it, mock, expect }
+        vm.createContext(context)
         resetState()
-        eval(code)
+        vm.runInContext(code, context)
         const { testResults } = await run()
         testResult.testResults = testResults
         testResult.success = testResults.every(result => !result.errors.length)
@@ -30,12 +29,3 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
 
     return testResult
 }
-
-// Just to materialize Imports being used
-const materializeImport = () => {
-    void expect
-    void mock
-    void describe
-    void it
-    void run
-} 
