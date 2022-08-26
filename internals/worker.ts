@@ -3,6 +3,7 @@ import mock from 'jest-mock'
 import expect from 'expect'
 import { describe, it, run, resetState}  from 'jest-circus'
 import vm from 'vm'
+import NodeEnvironment from 'jest-environment-node'
 import { TestResult } from '../types'
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
@@ -16,10 +17,17 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
     let testName = ''
     
     try{
-        const context = { describe, it, mock, expect }
-        vm.createContext(context)
+        const _context = { describe, it, mock, expect }
+        const environment = new NodeEnvironment({
+            // @ts-ignore
+            projectConfig: { 
+                testEnvironmentOptions: _context
+            }
+        }, _context)
+
         resetState()
-        vm.runInContext(code, context)
+        vm.runInContext(code, environment.getVmContext()!)
+
         const { testResults } = await run()
         testResult.testResults = testResults
         testResult.success = testResults.every(result => !result.errors.length)
