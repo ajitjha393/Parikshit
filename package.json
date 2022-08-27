@@ -1,6 +1,6 @@
 {
   "name": "parikshit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
@@ -20,7 +20,7 @@
     "format": "prettier --write .",
     "lint": "prettier --check .",
     "prepare": "husky install",
-    "build": "tsc --watch",
+    "build": "tsc",
     "start": "node index.js"
   },
   "devDependencies": {
