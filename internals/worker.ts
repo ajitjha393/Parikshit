@@ -1,5 +1,4 @@
 ﻿import fs from 'fs'
-import mock from 'jest-mock'
 import expect from 'expect'
 import { describe, it, run, resetState}  from 'jest-circus'
 import vm from 'vm'
@@ -7,6 +6,8 @@ import NodeEnvironment from 'jest-environment-node'
 import { join, dirname } from 'path'
 import { TestResult } from '../types'
 
+// import mock from 'jest-mock'
+const mock = require('jest-mock')
 
 export const runTest = async (testFile: string): Promise<TestResult> => {
     const code = await fs.promises.readFile(testFile, 'utf-8')
@@ -15,8 +16,7 @@ export const runTest = async (testFile: string): Promise<TestResult> => {
         testResults: [],
         errorMessage: null
     }
-
-    
+  
     try{
         const customRequire = (fileName: string): any => {
             const code = fs.readFileSync(join(dirname(testFile), fileName), 'utf8')

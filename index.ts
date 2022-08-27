@@ -43,7 +43,8 @@ const hasteMap = HasteMap.create({
                 .forEach(result => console.log(
                     result.testPath.slice(1).join(' >> ') + '\n' + result.errors[0]
                 ))
-            }else if(errorMessage) {
+            }
+            if(errorMessage) {
                 console.log(' ' + errorMessage)
             }
         }
@@ -52,7 +53,7 @@ const hasteMap = HasteMap.create({
     worker.end()
 
     if(hasTestsFailed){
-        console.log(chalk.red.bold('The test run failed, please fix your failing tests'))
+        console.log(chalk.red.bold('\nThe test run failed, please fix your failing tests\n'))
         process.exitCode = 1
     }
 })()
